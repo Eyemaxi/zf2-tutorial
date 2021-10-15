@@ -1,0 +1,12 @@
+<?php
+
+use Blog\Form\PostForm;
+
+/* @var PostForm $form */
+$form = $this->form;
+$form->setAttribute('action', $this->url());
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
