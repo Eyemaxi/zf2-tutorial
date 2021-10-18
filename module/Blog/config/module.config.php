@@ -2,14 +2,30 @@
 return array(
     'db' => array(
         'driver'         => 'Pdo',
-        'dsn'            => 'mysql:dbname=zf2tutorial;host=localhost',
+        'dsn'            => 'mysql:dbname=zf2blog;host=localhost',
         'driver_options' => array(
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
         )
     ),
+    'doctrine' => array(
+        'driver' => array(
+            'blog_entities' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/Blog/Model')
+            ),
+
+            'orm_default' => array(
+                'drivers' => array(
+                    'Blog\Model' => 'blog_entities'
+                ),
+            ),
+        ),
+    ),
     'service_manager' => array(
         'factories' => array(
-            'Blog\Mapper\PostMapperInterface'   => 'Blog\Factory\ZendDbSqlMapperFactory',
+//            'Blog\Mapper\PostMapperInterface'   => 'Blog\Factory\ZendDbSqlMapperFactory',
+            'Blog\Mapper\PostMapperInterface'   => 'Blog\Factory\DoctrineMapperFactory',
             'Blog\Service\PostServiceInterface' => 'Blog\Factory\PostServiceFactory',
             'Zend\Db\Adapter\Adapter'           => 'Zend\Db\Adapter\AdapterServiceFactory'
         )
@@ -18,10 +34,14 @@ return array(
         'template_path_stack' => array(
             __DIR__ . '/../view',
         ),
+        'controller_map' => array(
+            'Blog\Controller\IndexController' => 'blog',
+            'Blog\Controller\WriteController' => 'blog/form',
+        ),
     ),
     'controllers'  => array(
         'factories' => array(
-            'Blog\Controller\List' => 'Blog\Factory\ListControllerFactory',
+            'Blog\Controller\Index' => 'Blog\Factory\IndexControllerFactory',
             'Blog\Controller\Write' => 'Blog\Factory\WriteControllerFactory'
         )
     ),
@@ -37,18 +57,19 @@ return array(
                     'route'    => '/blog',
                     // Define default controller and action to be called when this route is matched
                     'defaults' => array(
-                        'controller' => 'Blog\Controller\List',
+                        '__NAMESPACE__' => 'Blog\Controller',
+                        'controller' => 'Index',
                         'action'     => 'index',
                     ),
                 ),
                 'may_terminate' => true,
                 'child_routes'  => array(
-                    'detail' => array(
+                    'view' => array(
                         'type' => 'segment',
                         'options' => array(
                             'route'    => '/:id',
                             'defaults' => array(
-                                'action' => 'detail'
+                                'action' => 'view'
                             ),
                             'constraints' => array(
                                 'id' => '\d+'
@@ -83,7 +104,7 @@ return array(
                         'options' => array(
                             'route'    => '/delete/:id',
                             'defaults' => array(
-                                'controller' => 'Blog\Controller\Delete',
+                                'controller' => 'Blog\Controller\Index',
                                 'action'     => 'delete'
                             ),
                             'constraints' => array(

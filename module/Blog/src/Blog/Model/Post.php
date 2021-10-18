@@ -2,25 +2,36 @@
 
 namespace Blog\Model;
 
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="post")
+ */
 class Post implements PostInterface
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @var int
      */
     protected $id;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=false)
      * @var string
      */
     protected $title;
 
     /**
+     * @ORM\Column(type="text", nullable=false)
      * @var string
      */
     protected $text;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getId()
     {
@@ -28,15 +39,17 @@ class Post implements PostInterface
     }
 
     /**
-     * @param int $id
+     * @inheritDoc
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getTitle()
     {
@@ -44,15 +57,16 @@ class Post implements PostInterface
     }
 
     /**
-     * @param string $title
+     * @inheritDoc
      */
     public function setTitle($title)
     {
         $this->title = $title;
+        return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getText()
     {
@@ -60,10 +74,11 @@ class Post implements PostInterface
     }
 
     /**
-     * @param string $text
+     * @inheritDoc
      */
     public function setText($text)
     {
         $this->text = $text;
+        return $this;
     }
 }
